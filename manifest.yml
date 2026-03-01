@@ -1,0 +1,40 @@
+#Kubernetes – Write a minimal Deployment manifest (YAML) that runs 3 replicas of the nginx:1.23 image, exposes port 80, and uses a ConfigMap named nginx-config to mount /etc/nginx/conf.d/default.conf. 
+apiVersion: apps/v1 
+kind: Deployment 
+metadata: 
+  name: web 
+spec: 
+  replicas: 3 # upadte the replica
+  selector: 
+    matchLabels: 
+      app: website 
+  template: 
+    metadata: 
+      labels: 
+        app: website 
+    spec: 
+      containers: 
+      - name: nginx 
+        image: nginx:l.23 # change the nginx version
+        ports: 
+        - containerPort: 80 
+        volumeMounts:       # added mount 
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+      volumes:              # added  the volumes
+      - name: nginx-config-volume
+        configMap:
+          name: nginx-config
+---
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: web 
+spec: 
+  type: ClusterIP 
+  selector: 
+    app: website 
+  ports: 
+    - port: 80 
+      targetPort: 80 
